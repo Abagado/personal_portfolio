@@ -1,15 +1,13 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import logo from "../assets/mushroom-64.png"; // Импортируем логотип как модуль
+import logo from "../assets/mushroom-64.png"; 
 
-// Интерфейс для пунктов меню
 interface MenuItem {
   id: number;
   name: string;
   path: string;
 }
 
-// Статический массив меню вынесен за пределы компонента
 const menu: MenuItem[] = [
   { id: 1, name: "HOME", path: "/" },
   { id: 2, name: "ABOUT", path: "/about" },

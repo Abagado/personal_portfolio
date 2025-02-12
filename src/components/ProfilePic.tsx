@@ -1,5 +1,5 @@
 import React from "react";
-import userImage from "../assets/user_image.png"; // Импорт изображения как модуля
+import userImage from "../assets/user_image.png"; 
 
 export const ProfilePic = () => {
   return (
@@ -8,5 +8,3 @@ export const ProfilePic = () => {
     </div>
   );
 };
-
-export default ProfilePic; // Дефолтный экспорт

@@ -1,7 +1,6 @@
 import React, { useReducer } from "react";
 import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
 
-// Интерфейсы для типов
 interface FormState {
   name: string;
   email: string;
@@ -85,7 +84,6 @@ export const Contact = () => {
       return;
     }
 
-    // Очистка формы при успешной отправке
     dispatch({ type: "RESET" });
   };
 

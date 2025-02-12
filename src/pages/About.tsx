@@ -4,7 +4,6 @@ import { FaSmile, FaHeart, FaRocket } from "react-icons/fa";
 export const About = () => {
   return (
     <div className="relative flex flex-col items-center w-full min-h-screen bg-gradient-to-b from-white to-green-100 px-5 py-12">
-      {/* Заголовок */}
       <h1 className="text-5xl font-extrabold text-green-600 mb-12 relative">
         Обо мне
       </h1>
@@ -54,7 +53,6 @@ export const About = () => {
         </div>
       </div>
 
-      {/* Символическое сообщение */}
       <div className="mt-12 text-lg text-green-600 font-semibold flex items-center gap-2">
         <FaHeart className="text-red-500" />
         Стремлюсь создавать полезные и вдохновляющие проекты!

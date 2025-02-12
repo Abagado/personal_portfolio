@@ -12,7 +12,7 @@ function App() {
     <Router>
       <div className="w-screen">
         <Header />
-        <div className="mt-[90px]"> {/* Отступ для фиксированного Header */}
+        <div className="mt-[90px]"> 
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
