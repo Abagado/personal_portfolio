@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { useProjectStore } from "../store/useProjectStore";
-
+import { loadProjectsFromStorage, saveProjectsToStorage } from "../utils/localStorageService";
 
 interface ProjectFormState {
   name: string;
@@ -28,9 +28,9 @@ export const Projects = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   useEffect(() => {
-    const storedProjects = localStorage.getItem("projects");
+    const storedProjects = loadProjectsFromStorage();
     if (storedProjects) {
-      loadProjects(JSON.parse(storedProjects));
+      loadProjects(storedProjects);
     }
   }, [loadProjects]);
 
@@ -54,6 +54,8 @@ export const Projects = () => {
       addProject({ name, description, icon });
     }
 
+    saveProjectsToStorage(projects);
+    
     setFormState({ name: "", description: "", icon: "", id: undefined, error: "" });
     setIsFormVisible(false);
   };
@@ -160,4 +162,5 @@ export const Projects = () => {
     </div>
   );
 };
+
 
