@@ -1,5 +1,6 @@
 import { Project } from "../store/useProjectStore"; 
 
+
 export const loadProjectsFromStorage = (): Project[] => {
   try {
     const storedProjects = localStorage.getItem("projects");

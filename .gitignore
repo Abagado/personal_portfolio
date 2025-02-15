@@ -10,6 +10,10 @@ lerna-debug.log*
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1408838 (Добавление файлов которые до этого случайно не добавились)
 # Runtime data
 pids
 *.pid
@@ -141,3 +145,4 @@ tsconfig.node.json
 vite.config.ts
 backup-repo/
 replace.txt
+
