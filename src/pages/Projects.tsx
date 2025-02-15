@@ -31,7 +31,7 @@ export const Projects = () => {
 
   const [isFormVisible, setIsFormVisible] = useState(false);
 
-  const githubUsername = "Abagado"; 
+  const githubUsername = ""; 
   const githubToken = ""; 
 
   useEffect(() => {
