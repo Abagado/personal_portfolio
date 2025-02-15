@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaSync } from "react-icons/fa";
 import { useProjectStore } from "../store/useProjectStore";
 import { loadProjectsFromStorage, saveProjectsToStorage } from "../utils/localStorageService";
 
@@ -14,28 +14,39 @@ interface ProjectFormState {
 
 export const Projects = () => {
   const projects = useProjectStore((state) => state.projects);
+  const status = useProjectStore((state) => state.status);
+  const error = useProjectStore((state) => state.error);
+  const fetchProjects = useProjectStore((state) => state.fetchProjects);
   const addProject = useProjectStore((state) => state.addProject);
   const updateProject = useProjectStore((state) => state.updateProject);
   const deleteProject = useProjectStore((state) => state.deleteProject);
-  const loadProjects = useProjectStore((state) => state.loadProjects);
 
-  const [formState, setFormState] = useState<ProjectFormState>({
+  const [formState, setFormState] = useState({
     name: "",
     description: "",
     icon: "",
     error: "",
+    id: undefined as string | undefined,
   });
 
   const [isFormVisible, setIsFormVisible] = useState(false);
 
-  useEffect(() => {
-    const storedProjects = loadProjectsFromStorage();
-    if (storedProjects) {
-      loadProjects(storedProjects);
-    }
-  }, [loadProjects]);
+  const githubUsername = "Abagado"; 
+  const githubToken = ""; 
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  useEffect(() => {
+    // Загружаем проекты из localStorage, если они есть
+    const storedProjects = localStorage.getItem("projects");
+    if (storedProjects) {
+      useProjectStore.getState().setProjects(JSON.parse(storedProjects));
+    }
+    // Подгружаем проекты с GitHub
+    fetchProjects(githubUsername, githubToken);
+  }, [fetchProjects]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormState({ ...formState, [e.target.name]: e.target.value, error: "" });
   };
 
@@ -59,9 +70,30 @@ export const Projects = () => {
     setIsFormVisible(false);
   };
 
+  const handleFetchProjects = () => {
+    fetchProjects(githubUsername, githubToken);
+  };
+
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-gradient-to-b from-white to-green-100 px-5 py-12 relative">
-      <h1 className="text-5xl font-extrabold text-green-600 mb-10">Мои проекты</h1>
+      <h1 className="text-5xl font-extrabold text-green-600 mb-10">
+        Мои проекты
+      </h1>
+
+      <button
+        className="bg-blue-500 text-white py-2 px-4 rounded mb-6 flex items-center justify-center"
+        onClick={handleFetchProjects}
+      >
+        <FaSync className="mr-2" />
+        Обновить проекты
+      </button>
+
+      {status === "loading" && (
+        <div className="flex justify-center items-center mt-4">
+          <div className="w-8 h-8 border-4 border-t-4 border-green-500 border-solid rounded-full animate-spin"></div>
+        </div>
+      )}
+      {status === "failed" && <div className="text-red-500">{error}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
         {projects.map((project) => (
@@ -73,10 +105,17 @@ export const Projects = () => {
               src={project.icon}
               alt="Project Icon"
               className="w-16 h-16 mb-4 rounded-full object-cover"
-              onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/64?text=No+Image")}
+              onError={(e) =>
+                (e.currentTarget.src =
+                  "https://via.placeholder.com/64?text=No+Image")
+              }
             />
-            <h2 className="mt-4 text-xl font-bold text-gray-800">{project.name}</h2>
-            <p className="mt-2 text-center text-gray-600">{project.description}</p>
+            <h2 className="mt-4 text-xl font-bold text-gray-800">
+              {project.name}
+            </h2>
+            <p className="mt-2 text-center text-gray-600">
+              {project.description}
+            </p>
             <div className="mt-4 flex space-x-4">
               <button
                 className="flex items-center px-3 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
@@ -108,7 +147,13 @@ export const Projects = () => {
         <button
           className="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition"
           onClick={() => {
-            setFormState({ name: "", description: "", icon: "", error: "" });
+            setFormState({
+              name: "",
+              description: "",
+              icon: "",
+              error: "",
+              id: undefined,
+            });
             setIsFormVisible(true);
           }}
         >
@@ -117,46 +162,57 @@ export const Projects = () => {
       </div>
 
       {isFormVisible && (
-        <form
-          onSubmit={handleSaveProject}
-          className="fixed bottom-20 right-10 bg-white p-6 shadow-lg rounded-lg w-80"
-        >
-          <h2 className="text-xl font-bold text-gray-800 mb-4">
-            {formState.id ? "Редактировать проект" : "Добавить проект"}
-          </h2>
-          <input
-            type="text"
-            name="name"
-            placeholder="Название проекта"
-            value={formState.name}
-            onChange={handleInputChange}
-            className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          <textarea
-            name="description"
-            placeholder="Описание проекта"
-            value={formState.description}
-            onChange={handleInputChange}
-            className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          ></textarea>
-          <input
-            type="text"
-            name="icon"
-            placeholder="Ссылка на изображение"
-            value={formState.icon}
-            onChange={handleInputChange}
-            className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-
-          {formState.error && <p className="text-red-500 mb-2">{formState.error}</p>}
-
-          <button
-            type="submit"
-            className="w-full py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition"
+        <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center">
+          <form
+            className="bg-white p-6 rounded-lg shadow-lg w-96"
+            onSubmit={handleSaveProject}
           >
-            {formState.id ? "Сохранить изменения" : "Добавить"}
-          </button>
-        </form>
+            <h3 className="text-2xl font-bold mb-4">
+              {formState.id ? "Редактировать проект" : "Добавить проект"}
+            </h3>
+            {formState.error && (
+              <p className="text-red-500">{formState.error}</p>
+            )}
+            <input
+              type="text"
+              name="name"
+              placeholder="Название"
+              value={formState.name}
+              onChange={handleInputChange}
+              className="w-full mb-4 p-2 border border-gray-300 rounded"
+            />
+            <textarea
+              name="description"
+              placeholder="Описание"
+              value={formState.description}
+              onChange={handleInputChange}
+              className="w-full mb-4 p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              name="icon"
+              placeholder="Ссылка на иконку"
+              value={formState.icon}
+              onChange={handleInputChange}
+              className="w-full mb-4 p-2 border border-gray-300 rounded"
+            />
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                className="bg-gray-300 text-black px-4 py-2 rounded"
+                onClick={() => setIsFormVisible(false)}
+              >
+                Отмена
+              </button>
+              <button
+                type="submit"
+                className="bg-green-500 text-white px-4 py-2 rounded"
+              >
+                Сохранить
+              </button>
+            </div>
+          </form>
+        </div>
       )}
     </div>
   );
