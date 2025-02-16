@@ -4,8 +4,6 @@ import { useProjectStore } from "../store/useProjectStore";
 import { loadProjectsFromStorage, saveProjectsToStorage } from "../utils/localStorageService";
 
 
-
-
 interface ProjectFormState {
   name: string;
   description: string;
@@ -34,7 +32,6 @@ export const Projects = () => {
     const storedProjects = loadProjectsFromStorage();
     if (storedProjects) {
       loadProjects(storedProjects);
-
     }
   }, [loadProjects]);
 
@@ -57,9 +54,7 @@ export const Projects = () => {
     } else {
       addProject({ name, description, icon });
     }
-
     saveProjectsToStorage(projects);
-
     setFormState({ name: "", description: "", icon: "", id: undefined, error: "" });
     setIsFormVisible(false);
   };
@@ -166,6 +161,4 @@ export const Projects = () => {
     </div>
   );
 };
-
-
 
