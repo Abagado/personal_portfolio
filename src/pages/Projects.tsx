@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaEdit, FaTrash, FaSync } from "react-icons/fa";
-import { useProjectStore } from "../store/useProjectStore";
+import { useProjectStore, StatusEnum } from "../store/useProjectStore";
+import {loadProjectsFromStorage} from "../utils/localStorageService";
+import { Spinner } from "../components/Spinner";
+import { FALLBACK_IMAGE_URL } from "../constants";
 
+interface ProjectFormState {
+  name: string;
+  description: string;
+  icon: string;
+  error: string;
+  id?: string;
+}
 
 export const Projects = () => {
   const projects = useProjectStore((state) => state.projects);
-  const status = useProjectStore((state) => state.status);
+  const status = useProjectStore((state) => state.status) as StatusEnum;
   const error = useProjectStore((state) => state.error);
   const fetchProjects = useProjectStore((state) => state.fetchProjects);
   const addProject = useProjectStore((state) => state.addProject);
   const updateProject = useProjectStore((state) => state.updateProject);
   const deleteProject = useProjectStore((state) => state.deleteProject);
 
-  const [formState, setFormState] = useState({
-    name: "",
-    description: "",
-    icon: "",
-    error: "",
-    id: undefined as string | undefined,
+  const [formState, setFormState] = useState<ProjectFormState>({
+    name: import.meta.env.VITE_DEFAULT_NAME || "",
+    description: import.meta.env.VITE_DEFAULT_DESCRIPTION || "",
+    icon: import.meta.env.VITE_DEFAULT_ICON || "",
+    error: import.meta.env.VITE_DEFAULT_ERROR || "",
+    id: undefined,
   });
 
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -26,12 +36,8 @@ export const Projects = () => {
   const githubToken = ""; 
 
   useEffect(() => {
-    // Загружаем проекты из localStorage, если они есть
-    const storedProjects = localStorage.getItem("projects");
-    if (storedProjects) {
-      useProjectStore.getState().setProjects(JSON.parse(storedProjects));
-    }
-    // Подгружаем проекты с GitHub
+    const storedProjects = loadProjectsFromStorage();
+    useProjectStore.getState().setProjects(storedProjects);
     fetchProjects(githubUsername, githubToken);
   }, [fetchProjects]);
 
@@ -85,12 +91,8 @@ export const Projects = () => {
         Обновить проекты
       </button>
 
-      {status === "loading" && (
-        <div className="flex justify-center items-center mt-4">
-          <div className="w-8 h-8 border-4 border-t-4 border-green-500 border-solid rounded-full animate-spin"></div>
-        </div>
-      )}
-      {status === "failed" && <div className="text-red-500">{error}</div>}
+      {status === StatusEnum.LOADING && <Spinner />}
+      {status === StatusEnum.FAILED && <div className="text-red-500">{error}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
         {projects.map((project) => (
@@ -102,10 +104,7 @@ export const Projects = () => {
               src={project.icon}
               alt="Project Icon"
               className="w-16 h-16 mb-4 rounded-full object-cover"
-              onError={(e) =>
-                (e.currentTarget.src =
-                  "https://via.placeholder.com/64?text=No+Image")
-              }
+              onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE_URL)}
             />
             <h2 className="mt-4 text-xl font-bold text-gray-800">
               {project.name}
