@@ -1,7 +1,8 @@
 
-Выполнила лабораторную 4. Проекты подсасываются из GitHub и при этом их также можно добавить вручную. Те что с GitHub берут id оттуда же, а для тех, которые добавляются вручную используется crypto.randomUUID().
-
-![изображение](https://github.com/user-attachments/assets/72e84bfe-4168-4aa7-aebe-121b8ec289e2)
-![изображение](https://github.com/user-attachments/assets/8b023547-97bf-487a-8dea-7f79717bd044)
-![изображение](https://github.com/user-attachments/assets/1ed6fb7b-725a-4446-a78c-063cf6f0c2a7)
+Выполнила лабораторную 5. Добавила смену тем, адаптивность и анимацию. Выглядит вот так:
+![изображение](https://github.com/user-attachments/assets/784c0439-7dc2-4031-97d3-0541ff76d8d9)
+![изображение](https://github.com/user-attachments/assets/3560e1d6-ddb0-4895-83aa-6b101077505f)
+![изображение](https://github.com/user-attachments/assets/e4e17928-1e92-488a-8f57-c8568ad6ecd4)
+![изображение](https://github.com/user-attachments/assets/85ac2fa1-d43f-46fd-aef0-c0f95ddf9911)
+![изображение](https://github.com/user-attachments/assets/40933427-2cb4-4a0d-9db9-0d271df18644)
 
