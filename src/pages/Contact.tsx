@@ -1,5 +1,6 @@
 import React, { useReducer } from "react";
 import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { useTheme } from "../context/ThemeContext";
 
 interface FormState {
   name: string;
@@ -90,9 +91,10 @@ export const Contact = () => {
   const handleFieldChange = (field: keyof Omit<FormState, "errors">, value: string) => {
     dispatch({ type: "SET_FIELD", payload: { field, value } });
   };
+  const { theme } = useTheme();
 
   return (
-    <div className="flex flex-col items-center w-full min-h-screen bg-gradient-to-b from-green-100 to-white px-5 py-12">
+    <div className={`flex flex-col items-center w-full min-h-screen ${theme === "light" ? "light-gradient" : "dark-gradient"} px-5 py-12`}>
       <h1 className="text-5xl font-extrabold text-green-600 mb-8">Связаться со мной</h1>
       <p className="text-lg text-gray-700 text-center max-w-2xl mb-10 leading-relaxed">
         Если у вас есть вопросы, предложения или просто хотите поздороваться, я всегда рада общению!

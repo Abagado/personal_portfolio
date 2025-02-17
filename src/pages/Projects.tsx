@@ -4,6 +4,7 @@ import { useProjectStore, StatusEnum } from "../store/useProjectStore";
 import {loadProjectsFromStorage} from "../utils/localStorageService";
 import { Spinner } from "../components/Spinner";
 import { FALLBACK_IMAGE_URL } from "../constants";
+import { useTheme } from "../context/ThemeContext";
 
 interface ProjectFormState {
   name: string;
@@ -34,6 +35,7 @@ export const Projects = () => {
 
   const githubUsername = ""; 
   const githubToken = ""; 
+  const { theme } = useTheme();
 
   useEffect(() => {
     const storedProjects = loadProjectsFromStorage();
@@ -78,7 +80,7 @@ export const Projects = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full min-h-screen bg-gradient-to-b from-white to-green-100 px-5 py-12 relative">
+    <div className={`flex flex-col items-center w-full min-h-screen ${theme === "light" ? "light-gradient" : "dark-gradient"} px-5 py-12 relative`}>
       <h1 className="text-5xl font-extrabold text-green-600 mb-10">
         Мои проекты
       </h1>
