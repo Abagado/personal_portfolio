@@ -1,9 +1,10 @@
 import axios from "axios";
 import { Project } from "../store/useProjectStore";
+import { delay } from "../utils/delay";
 
 const githubAPI = axios.create({
   baseURL: "https://api.github.com",
-  timeout: 5000, 
+  timeout: 5000,
   headers: {
     Accept: "application/vnd.github.v3+json",
   },
@@ -16,10 +17,8 @@ interface GitHubRepo {
   owner: { avatar_url: string };
 }
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const fetchRepos = async (username: string, token?: string): Promise<Project[]> => {
-  const MAX_RETRIES = 3; // Количество попыток при неудачных запросах
+  const MAX_RETRIES = 3;
   let attempt = 0;
 
   while (attempt < MAX_RETRIES) {
@@ -42,10 +41,11 @@ export const fetchRepos = async (username: string, token?: string): Promise<Proj
         throw new Error("Не удалось загрузить репозитории после нескольких попыток.");
       }
 
-      await delay(500 * attempt); // задержка перед повторной попыткой
+      await delay(500 * attempt);
     }
   }
 
   return [];
 };
+
 

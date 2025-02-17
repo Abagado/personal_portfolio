@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { loadProjectsFromStorage, saveProjectsToStorage } from "../utils/localStorageService";
-import { fetchRepos } from "../services/githubService"; 
+import { persist } from "zustand/middleware";
+import { fetchRepos } from "../services/githubService";
 
 export interface Project {
   id: string;
@@ -27,56 +27,53 @@ interface ProjectState {
   fetchProjects: (username: string, token?: string) => Promise<void>;
 }
 
-export const useProjectStore = create<ProjectState>((set) => ({
-  projects: loadProjectsFromStorage(), // Загружаем проекты из localStorage при инициализации
-  status: StatusEnum.IDLE,
-  error: null,
+export const useProjectStore = create<ProjectState>()(
+  persist(
+    (set) => ({
+      projects: [],
+      status: StatusEnum.IDLE,
+      error: null,
 
-  setProjects: (projects) => {
-    saveProjectsToStorage(projects);
-    set({ projects });
-  },
+      setProjects: (projects) => set({ projects }),
 
-  addProject: (project) =>
-    set((state) => {
-      const newProject = { id: crypto.randomUUID(), ...project };
-      const updatedProjects = [...state.projects, newProject];
-      saveProjectsToStorage(updatedProjects);
-      return { projects: updatedProjects };
+      addProject: (project) =>
+        set((state) => ({
+          projects: [...state.projects, { id: crypto.randomUUID(), ...project }],
+        })),
+
+      updateProject: (id, updatedData) =>
+        set((state) => ({
+          projects: state.projects.map((project) =>
+            project.id === id ? { ...project, ...updatedData } : project
+          ),
+        })),
+
+      deleteProject: (id) =>
+        set((state) => ({
+          projects: state.projects.filter((project) => project.id !== id),
+        })),
+
+      fetchProjects: async (username, token) => {
+        set({ status: StatusEnum.LOADING });
+
+        try {
+          const fetchedProjects = await fetchRepos(username, token);
+          set({ projects: fetchedProjects, status: StatusEnum.SUCCESS });
+        } catch (error) {
+          set({
+            status: StatusEnum.FAILED,
+            error: error instanceof Error ? error.message : "Неизвестная ошибка",
+          });
+        }
+      },
     }),
-
-  updateProject: (id, updatedData) =>
-    set((state) => {
-      const updatedProjects = state.projects.map((project) =>
-        project.id === id ? { ...project, ...updatedData } : project
-      );
-      saveProjectsToStorage(updatedProjects);
-      return { projects: updatedProjects };
-    }),
-
-  deleteProject: (id) =>
-    set((state) => {
-      const updatedProjects = state.projects.filter((project) => project.id !== id);
-      saveProjectsToStorage(updatedProjects);
-      return { projects: updatedProjects };
-    }),
-
-  fetchProjects: async (username: string, token?: string) => {
-    set({ status: StatusEnum.LOADING });
-
-    try {
-      const fetchedProjects = await fetchRepos(username, token); 
-
-      set({ projects: fetchedProjects, status: StatusEnum.SUCCESS });
-      saveProjectsToStorage(fetchedProjects); 
-    } catch (error) {
-      set({
-        status: StatusEnum.FAILED,
-        error: error instanceof Error ? error.message : "Неизвестная ошибка",
-      });
+    {
+      name: "projects-storage",
     }
-  },
-}));
+  )
+);
+
+
 
 
 
