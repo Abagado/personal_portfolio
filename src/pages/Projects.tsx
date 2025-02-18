@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaEdit, FaTrash, FaSync } from "react-icons/fa";
 import { useProjectStore, StatusEnum } from "../store/useProjectStore";
-import {loadProjectsFromStorage} from "../utils/localStorageService";
+import { loadProjectsFromStorage } from "../utils/localStorageService";
 import { Spinner } from "../components/Spinner";
 import { FALLBACK_IMAGE_URL } from "../constants";
 import { useTheme } from "../context/ThemeContext";
@@ -33,8 +33,8 @@ export const Projects = () => {
 
   const [isFormVisible, setIsFormVisible] = useState(false);
 
-  const githubUsername = ""; 
-  const githubToken = ""; 
+  const githubUsername = "";
+  const githubToken = "";
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -80,7 +80,11 @@ export const Projects = () => {
   };
 
   return (
-    <div className={`flex flex-col items-center w-full min-h-screen ${theme === "light" ? "light-gradient" : "dark-gradient"} px-5 py-12 relative`}>
+    <div
+      className={`flex flex-col items-center w-full min-h-screen ${
+        theme === "light" ? "light-gradient" : "dark-gradient"
+      } px-5 py-12 relative`}
+    >
       <h1 className="text-5xl font-extrabold text-green-600 mb-10">
         Мои проекты
       </h1>
@@ -94,7 +98,9 @@ export const Projects = () => {
       </button>
 
       {status === StatusEnum.LOADING && <Spinner />}
-      {status === StatusEnum.FAILED && <div className="text-red-500">{error}</div>}
+      {status === StatusEnum.FAILED && (
+        <div className="text-red-500">{error}</div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
         {projects.map((project) => (
@@ -162,7 +168,11 @@ export const Projects = () => {
       {isFormVisible && (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center">
           <form
-            className="bg-white p-6 rounded-lg shadow-lg w-96"
+            className={`p-6 rounded-lg shadow-lg w-96 transition-colors ${
+              theme === "light"
+                ? "bg-white text-black"
+                : "bg-gray-900 text-white"
+            }`}
             onSubmit={handleSaveProject}
           >
             <h3 className="text-2xl font-bold mb-4">
@@ -177,14 +187,22 @@ export const Projects = () => {
               placeholder="Название"
               value={formState.name}
               onChange={handleInputChange}
-              className="w-full mb-4 p-2 border border-gray-300 rounded"
+              className={`w-full mb-4 p-2 border rounded ${
+                theme === "light"
+                  ? "border-gray-300 bg-white text-black"
+                  : "border-gray-700 bg-gray-800 text-white"
+              }`}
             />
             <textarea
               name="description"
               placeholder="Описание"
               value={formState.description}
               onChange={handleInputChange}
-              className="w-full mb-4 p-2 border border-gray-300 rounded"
+              className={`w-full mb-4 p-2 border rounded ${
+                theme === "light"
+                  ? "border-gray-300 bg-white text-black"
+                  : "border-gray-700 bg-gray-800 text-white"
+              }`}
             />
             <input
               type="text"
@@ -192,12 +210,20 @@ export const Projects = () => {
               placeholder="Ссылка на иконку"
               value={formState.icon}
               onChange={handleInputChange}
-              className="w-full mb-4 p-2 border border-gray-300 rounded"
+              className={`w-full mb-4 p-2 border rounded ${
+                theme === "light"
+                  ? "border-gray-300 bg-white text-black"
+                  : "border-gray-700 bg-gray-800 text-white"
+              }`}
             />
             <div className="flex justify-end space-x-4">
               <button
                 type="button"
-                className="bg-gray-300 text-black px-4 py-2 rounded"
+                className={`px-4 py-2 rounded ${
+                  theme === "light"
+                    ? "bg-gray-300 text-black"
+                    : "bg-gray-700 text-white"
+                }`}
                 onClick={() => setIsFormVisible(false)}
               >
                 Отмена
